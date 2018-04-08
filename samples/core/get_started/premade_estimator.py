@@ -22,6 +22,7 @@ import tensorflow as tf
 import iris_data
 import os
 
+TENSORBOARD_FOLDER = os.getcwd()+'/__tensorboard__'
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch_size', default=100, type=int, help='batch size')
@@ -47,7 +48,7 @@ def main(argv):
         # The model must choose between 3 classes.
         n_classes=3,
         # Visualization
-        model_dir=os.getcwd()+'/__tensorboard__'
+        model_dir=TENSORBOARD_FOLDER
         )
 
     # Train the Model.
