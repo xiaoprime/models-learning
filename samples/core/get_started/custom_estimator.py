@@ -20,6 +20,7 @@ import argparse
 import tensorflow as tf
 
 import iris_data
+import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch_size', default=100, type=int, help='batch size')
@@ -89,7 +90,8 @@ def main(argv):
             'hidden_units': [10, 10],
             # The model must choose between 3 classes.
             'n_classes': 3,
-        })
+        },
+        model_dir=os.getcwd())
 
     # Train the Model.
     classifier.train(
