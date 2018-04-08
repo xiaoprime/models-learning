@@ -91,7 +91,8 @@ def main(argv):
             # The model must choose between 3 classes.
             'n_classes': 3,
         },
-        model_dir=os.getcwd())
+        model_dir=os.getcwd()+'/__tensorboard__'
+    )
 
     # Train the Model.
     classifier.train(
