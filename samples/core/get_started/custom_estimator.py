@@ -67,6 +67,22 @@ def my_model(features, labels, mode, params):
     # Create training op.
     assert mode == tf.estimator.ModeKeys.TRAIN
 
+    # Show each layer histogram
+    gr = tf.get_default_graph()
+    #print([tensor.name for tensor in gr.as_graph_def().node])
+    
+    input_layer_kernel = gr.get_tensor_by_name('dense/kernel:0')
+    tf.summary.histogram('input_layer_kernel', input_layer_kernel)
+
+    first_layer_kernel = gr.get_tensor_by_name('dense_1/kernel:0')
+    tf.summary.histogram('first_layer_kernel', first_layer_kernel)
+ 
+    second_layer_kernel = gr.get_tensor_by_name('dense_2/kernel:0')
+    tf.summary.histogram('second_layer_kernel', second_layer_kernel)
+
+    output = gr.get_tensor_by_name('ArgMax:0')
+    tf.summary.histogram('output', output)
+
     optimizer = tf.train.AdagradOptimizer(learning_rate=0.1)
     train_op = optimizer.minimize(loss, global_step=tf.train.get_global_step())
     return tf.estimator.EstimatorSpec(mode, loss=loss, train_op=train_op)
