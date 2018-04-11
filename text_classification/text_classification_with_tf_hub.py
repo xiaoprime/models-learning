@@ -64,7 +64,7 @@ import pandas as pd
 import re
 import seaborn as sns
 
-
+TENSORBOARD_FOLDER = os.getcwd()+'/__tensorboard__'
 
 """# Getting started
 
@@ -93,10 +93,13 @@ def load_dataset(directory):
 
 # Download and process the dataset files.
 def download_and_load_datasets(force_download=False):
-  dataset = tf.keras.utils.get_file(
-      fname="aclImdb.tar.gz", 
-      origin="http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz", 
-      extract=True)
+  dataset = os.getcwd()+'/datasets/aclImdb'
+  if force_download or not os.path.isdir(dataset):
+    dataset = tf.keras.utils.get_file(
+        fname="aclImdb.tar.gz", 
+        origin="http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz", 
+        extract=True,
+        cache_dir=os.getcwd())
   
   train_df = load_dataset(os.path.join(os.path.dirname(dataset), 
                                        "aclImdb", "train"))
@@ -150,7 +153,9 @@ estimator = tf.estimator.DNNClassifier(
     hidden_units=[500, 100],
     feature_columns=[embedded_text_feature_column],
     n_classes=2,
-    optimizer=tf.train.AdagradOptimizer(learning_rate=0.003))
+    optimizer=tf.train.AdagradOptimizer(learning_rate=0.003),
+    model_dir=TENSORBOARD_FOLDER
+    )
 
 """### Training
 
@@ -160,7 +165,7 @@ Train the estimator for a reasonable amount of steps.
 # Training for 1,000 steps means 128,000 training examples with the default
 # batch size. This is roughly equivalent to 5 epochs since the training dataset
 # contains 25,000 examples.
-estimator.train(input_fn=train_input_fn, steps=1000);
+# estimator.train(input_fn=train_input_fn, steps=1000);
 
 """# Prediction
 
@@ -226,11 +231,14 @@ def train_and_evaluate_with_module(hub_module, train_module=False):
   embedded_text_feature_column = hub.text_embedding_column(
       key="sentence", module_spec=hub_module, trainable=train_module)
 
+  hub_module_name = re.search('https://tfhub.dev/google/([\w-]{0,})/1', hub_module).group(1)
+
   estimator = tf.estimator.DNNClassifier(
       hidden_units=[500, 100],
       feature_columns=[embedded_text_feature_column],
       n_classes=2,
-      optimizer=tf.train.AdagradOptimizer(learning_rate=0.003))
+      optimizer=tf.train.AdagradOptimizer(learning_rate=0.003),
+      model_dir=TENSORBOARD_FOLDER+'/'+hub_module_name)
 
   estimator.train(input_fn=train_input_fn, steps=1000)
 
