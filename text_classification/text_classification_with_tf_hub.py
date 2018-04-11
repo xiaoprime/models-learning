@@ -156,7 +156,7 @@ estimator = tf.estimator.DNNClassifier(
     optimizer=tf.train.AdagradOptimizer(learning_rate=0.003),
     model_dir=TENSORBOARD_FOLDER
     )
-'''
+
 """### Training
 
 Train the estimator for a reasonable amount of steps.
@@ -165,7 +165,7 @@ Train the estimator for a reasonable amount of steps.
 # Training for 1,000 steps means 128,000 training examples with the default
 # batch size. This is roughly equivalent to 5 epochs since the training dataset
 # contains 25,000 examples.
-estimator.train(input_fn=train_input_fn, steps=1000);
+# estimator.train(input_fn=train_input_fn, steps=1000);
 
 """# Prediction
 
@@ -231,11 +231,14 @@ def train_and_evaluate_with_module(hub_module, train_module=False):
   embedded_text_feature_column = hub.text_embedding_column(
       key="sentence", module_spec=hub_module, trainable=train_module)
 
+  hub_module_name = re.search('https://tfhub.dev/google/([\w-]{0,})/1', hub_module).group(1)
+
   estimator = tf.estimator.DNNClassifier(
       hidden_units=[500, 100],
       feature_columns=[embedded_text_feature_column],
       n_classes=2,
-      optimizer=tf.train.AdagradOptimizer(learning_rate=0.003))
+      optimizer=tf.train.AdagradOptimizer(learning_rate=0.003),
+      model_dir=TENSORBOARD_FOLDER+'/'+hub_module_name)
 
   estimator.train(input_fn=train_input_fn, steps=1000)
 
@@ -275,4 +278,3 @@ estimator.evaluate(input_fn=predict_test_input_fn)["accuracy_baseline"]
 2. Allowing training of the module with **random embeddings** increases both training and test accuracy as oposed to training just the classifier.
 3. Training of the module with **pre-trained embeddings** also increases both accuracies. Note however the overfitting on the training set. Training a pre-trained module can be dangerous even with regularization in the sense that the embedding weights no longer represent the language model trained on diverse data, instead they converge to the ideal representation of the new dataset.
 """
-'''
