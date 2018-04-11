@@ -64,7 +64,7 @@ import pandas as pd
 import re
 import seaborn as sns
 
-
+TENSORBOARD_FOLDER = os.getcwd()+'/__tensorboard__'
 
 """# Getting started
 
@@ -93,10 +93,13 @@ def load_dataset(directory):
 
 # Download and process the dataset files.
 def download_and_load_datasets(force_download=False):
-  dataset = tf.keras.utils.get_file(
-      fname="aclImdb.tar.gz", 
-      origin="http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz", 
-      extract=True)
+  dataset = os.getcwd()+'/datasets/aclImdb'
+  if force_download or not os.path.isdir(dataset):
+    dataset = tf.keras.utils.get_file(
+        fname="aclImdb.tar.gz", 
+        origin="http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz", 
+        extract=True,
+        cache_dir=os.getcwd())
   
   train_df = load_dataset(os.path.join(os.path.dirname(dataset), 
                                        "aclImdb", "train"))
@@ -150,8 +153,10 @@ estimator = tf.estimator.DNNClassifier(
     hidden_units=[500, 100],
     feature_columns=[embedded_text_feature_column],
     n_classes=2,
-    optimizer=tf.train.AdagradOptimizer(learning_rate=0.003))
-
+    optimizer=tf.train.AdagradOptimizer(learning_rate=0.003),
+    model_dir=TENSORBOARD_FOLDER
+    )
+'''
 """### Training
 
 Train the estimator for a reasonable amount of steps.
@@ -270,3 +275,4 @@ estimator.evaluate(input_fn=predict_test_input_fn)["accuracy_baseline"]
 2. Allowing training of the module with **random embeddings** increases both training and test accuracy as oposed to training just the classifier.
 3. Training of the module with **pre-trained embeddings** also increases both accuracies. Note however the overfitting on the training set. Training a pre-trained module can be dangerous even with regularization in the sense that the embedding weights no longer represent the language model trained on diverse data, instead they converge to the ideal representation of the new dataset.
 """
+'''
