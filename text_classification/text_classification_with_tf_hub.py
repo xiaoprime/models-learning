@@ -165,7 +165,7 @@ Train the estimator for a reasonable amount of steps.
 # Training for 1,000 steps means 128,000 training examples with the default
 # batch size. This is roughly equivalent to 5 epochs since the training dataset
 # contains 25,000 examples.
-# estimator.train(input_fn=train_input_fn, steps=1000);
+estimator.train(input_fn=train_input_fn, steps=1000);
 
 """# Prediction
 
