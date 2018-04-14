@@ -109,7 +109,7 @@ def download_and_load_datasets(force_download=False):
   return train_df, test_df
 
 # Reduce logging output.
-tf.logging.set_verbosity(tf.logging.ERROR)
+tf.logging.set_verbosity(tf.logging.INFO)
 
 train_df, test_df = download_and_load_datasets()
 train_df.head()
@@ -166,7 +166,7 @@ Train the estimator for a reasonable amount of steps.
 # batch size. This is roughly equivalent to 5 epochs since the training dataset
 # contains 25,000 examples.
 estimator.train(input_fn=train_input_fn, steps=1000);
-
+'''
 """# Prediction
 
 Run predictions for both training and test set.
@@ -278,3 +278,4 @@ estimator.evaluate(input_fn=predict_test_input_fn)["accuracy_baseline"]
 2. Allowing training of the module with **random embeddings** increases both training and test accuracy as oposed to training just the classifier.
 3. Training of the module with **pre-trained embeddings** also increases both accuracies. Note however the overfitting on the training set. Training a pre-trained module can be dangerous even with regularization in the sense that the embedding weights no longer represent the language model trained on diverse data, instead they converge to the ideal representation of the new dataset.
 """
+'''
