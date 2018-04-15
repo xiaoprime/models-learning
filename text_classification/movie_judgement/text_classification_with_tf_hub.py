@@ -65,6 +65,7 @@ import re
 import seaborn as sns
 
 TENSORBOARD_FOLDER = os.getcwd()+'/__tensorboard__'
+HUB_MODULE_FOLDER = os.getcwd()+'/hub_module/'
 
 """# Getting started
 
@@ -140,7 +141,12 @@ TF-Hub provides a [feature column](https://github.com/tensorflow/hub/blob/master
 * The module works with any input (e.g. **nnlm-en-dim128** hashes words not present in vocabulary into ~20.000 buckets).
 """
 
-embedded_text_feature_column = hub.text_embedding_column(
+if os.path.isdir(HUB_MODULE_FOLDER+'nnlm-en-dim128'):
+  embedded_text_feature_column = hub.text_embedding_column(
+    key="sentence", 
+    module_spec=HUB_MODULE_FOLDER+'nnlm-en-dim128')
+else:
+  embedded_text_feature_column = hub.text_embedding_column(
     key="sentence", 
     module_spec="https://tfhub.dev/google/nnlm-en-dim128/1")
 
@@ -228,11 +234,15 @@ Let's run a couple of trainings and evaluations to see how using a various modul
 """
 
 def train_and_evaluate_with_module(hub_module, train_module=False):
-  embedded_text_feature_column = hub.text_embedding_column(
-      key="sentence", module_spec=hub_module, trainable=train_module)
-
   hub_module_name = re.search('https://tfhub.dev/google/([\w-]{0,})/1', hub_module).group(1)
 
+  if os.path.isdir(HUB_MODULE_FOLDER+hub_module_name):
+    embedded_text_feature_column = hub.text_embedding_column(
+      key="sentence", module_spec=HUB_MODULE_FOLDER+hub_module_name, trainable=train_module)
+  else:
+    embedded_text_feature_column = hub.text_embedding_column(
+      key="sentence", module_spec=hub_module, trainable=train_module)
+      
   estimator = tf.estimator.DNNClassifier(
       hidden_units=[500, 100],
       feature_columns=[embedded_text_feature_column],
