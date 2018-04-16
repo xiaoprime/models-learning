@@ -4,3 +4,4 @@
 __tensorboard__
 datasets
 hub_module
+*.ini
