@@ -70,12 +70,16 @@ classifier = tf.estimator.Estimator(
 # fake train
 classifier.train(input_fn=lambda:({"sentence": [""]},[0]), steps=1)
 
+with open("text_feature.py", "r") as f:
+    lines = f.readlines()
+
 predictions = classifier.predict(
-    input_fn=lambda:eval_input_fn({"sentence": ["cat is on the mat", "cat is on the mat"]})
+    input_fn=lambda:eval_input_fn({"sentence": lines})
     )
 
 output = []
-for pred_dict, expect in zip(predictions, [0, 0]):
+expects = range(1,len(lines)+1)
+for pred_dict, expect in zip(predictions, expects):
     template = ('\nPrediction is "{}", \n{}')
 
     net = pred_dict['net']
@@ -94,7 +98,7 @@ metadata = os.path.join(TENSORBOARD_FOLDER, 'metadata.tsv')
 images = tf.Variable(output, name='output')
 
 with open(metadata, 'w') as metadata_file:
-    for row in range(2):
+    for row in expects:
         c = row
         metadata_file.write('{}\n'.format(c))
 
